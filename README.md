@@ -1,1 +1,2 @@
-# job4j_github_analysis
+# job4j_github_analysis project
+This project is a Spring Boot application that performs scheduled tasks by analyzing data from GitHub. The application regularly collects information about repositories and commits, then stores this data in a database. The project demonstrates the use of Spring Boot Scheduler to automate this process, as well as the use of the @Async annotation for asynchronous task execution.
