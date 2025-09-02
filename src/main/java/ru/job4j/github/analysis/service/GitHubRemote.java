@@ -23,12 +23,11 @@ public class GitHubRemote {
     @Autowired
     private RestTemplate restTemplate;
 
-
     public List<Repository> fetchRepositories(String username) {
         String url = "https://api.github.com/users/" + username + "/repos";
         ResponseEntity<List<Repository>> response = restTemplate.exchange(
                 url, HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<Repository>>() {});
+                new ParameterizedTypeReference<List<Repository>>() { });
         return response.getBody();
     }
 
@@ -38,7 +37,7 @@ public class GitHubRemote {
        since.ifPresent(s -> uriBuilder.queryParam("since", s));
         ResponseEntity<List<CommitDto>> response = restTemplate.exchange(
                 uriBuilder.toUriString(), HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<CommitDto>>() {});
+                new ParameterizedTypeReference<List<CommitDto>>() { });
         return response.getBody();
     }
 }

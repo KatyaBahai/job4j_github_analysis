@@ -96,7 +96,7 @@ class CommitServiceImplTest {
     }
 
     @Test
-    void findLatestCommit_ShouldReturnNewestCommit() {
+    void findLatestCommitShouldReturnNewestCommit() {
         when(commitStore.findByRepositoryFullName("katya/analysis"))
                 .thenReturn(List.of(commit1, commit2));
 
@@ -109,7 +109,7 @@ class CommitServiceImplTest {
     }
 
     @Test
-    void findLatestCommit_ShouldReturnEmpty_WhenNoCommits() {
+    void findLatestCommitWhenNoCommitsThenEmpty() {
         when(commitStore.findByRepositoryFullName("katya/analysis"))
                 .thenReturn(List.of());
 
