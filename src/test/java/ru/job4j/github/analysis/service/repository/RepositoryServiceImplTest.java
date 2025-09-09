@@ -7,7 +7,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.job4j.github.analysis.model.Repository;
+import ru.job4j.github.analysis.model.GitHubRepository;
+import ru.job4j.github.analysis.service.GitHubRemote;
 import ru.job4j.github.analysis.store.RepositoryStore;
 
 import java.time.Duration;
@@ -22,16 +23,17 @@ import static org.mockito.Mockito.when;
 class RepositoryServiceImplTest {
     @Mock
     private RepositoryStore repositoryStore;
-
+    @Mock
+    private GitHubRemote gitHubRemote;
     @InjectMocks
     private RepositoryServiceImpl repositoryService;
 
-    private Repository testRepo1;
-    private Repository testRepo2;
+    private GitHubRepository testRepo1;
+    private GitHubRepository testRepo2;
 
     @BeforeEach
     void setUp() {
-        testRepo1 = Repository.builder()
+        testRepo1 = GitHubRepository.builder()
                 .id(1L)
                 .fullName("katya/analysis")
                 .createdAt(Instant.now().minus(Duration.ofDays(1)))
@@ -40,7 +42,7 @@ class RepositoryServiceImplTest {
                 .language("java")
                 .build();
 
-        testRepo2 = Repository.builder()
+        testRepo2 = GitHubRepository.builder()
                 .id(1L)
                 .fullName("katya/analysis")
                 .createdAt(Instant.now().minus(Duration.ofDays(1)))
@@ -52,23 +54,26 @@ class RepositoryServiceImplTest {
 
     @Test
     void create() {
-        repositoryService.create(testRepo1);
+        when(gitHubRemote.fetchRepositories("KatyaBahai"))
+                .thenReturn(List.of(testRepo1));
 
-        ArgumentCaptor<Repository> captor = ArgumentCaptor.forClass(Repository.class);
+        repositoryService.create("KatyaBahai");
+
+        ArgumentCaptor<GitHubRepository> captor = ArgumentCaptor.forClass(GitHubRepository.class);
         verify(repositoryStore).save(captor.capture());
 
-        Repository savedRepo = captor.getValue();
+        GitHubRepository savedRepo = captor.getValue();
         assertThat(savedRepo).isEqualTo(testRepo1);
     }
 
     @Test
     void getAll() {
-        repositoryService.create(testRepo1);
-        repositoryService.create(testRepo2);
+        repositoryService.create("KatyaBahai");
+        repositoryService.create("KatyaBahai");
 
         when(repositoryStore.findAll()).thenReturn(List.of(testRepo1, testRepo2));
 
-        List<Repository> result = repositoryService.getAll();
+        List<GitHubRepository> result = repositoryService.getAll();
 
         verify(repositoryStore).findAll();
         assertThat(result).containsExactly(testRepo1, testRepo2);

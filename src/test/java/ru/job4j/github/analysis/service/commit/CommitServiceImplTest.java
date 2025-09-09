@@ -9,7 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.job4j.github.analysis.dto.CommitDto;
 import ru.job4j.github.analysis.mapper.DtoToCommitMapper;
 import ru.job4j.github.analysis.model.Commit;
-import ru.job4j.github.analysis.model.Repository;
+import ru.job4j.github.analysis.model.GitHubRepository;
 import ru.job4j.github.analysis.store.CommitStore;
 
 import java.time.Duration;
@@ -31,7 +31,7 @@ class CommitServiceImplTest {
     @InjectMocks
     private CommitServiceImpl commitService;
 
-    private Repository testRepo;
+    private GitHubRepository testRepo;
     private CommitDto commitDto1;
     private CommitDto commitDto2;
     private Commit commit1;
@@ -39,7 +39,7 @@ class CommitServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        testRepo = Repository.builder()
+        testRepo = GitHubRepository.builder()
                 .id(1L)
                 .fullName("katya/analysis")
                 .createdAt(Instant.now().minus(Duration.ofDays(1)))
@@ -53,18 +53,18 @@ class CommitServiceImplTest {
 
         commit1 = Commit.builder()
                 .sha("sha1")
-                .date(commitDto1.getDate())
-                .author(commitDto1.getAuthor())
-                .message(commitDto1.getMessage())
-                .repository(testRepo)
+                .date(commitDto1.getCommit().getAuthor().getDate())
+                .author(commitDto1.getCommit().getAuthor().getName())
+                .message(commitDto1.getCommit().getMessage())
+                .gitHubRepository(testRepo)
                 .build();
 
         commit2 = Commit.builder()
                 .sha("sha2")
-                .date(commitDto2.getDate())
-                .author(commitDto2.getAuthor())
-                .message(commitDto2.getMessage())
-                .repository(testRepo)
+                .date(commitDto2.getCommit().getAuthor().getDate())
+                .author(commitDto2.getCommit().getAuthor().getName())
+                .message(commitDto2.getCommit().getMessage())
+                .gitHubRepository(testRepo)
                 .build();
     }
 
@@ -86,23 +86,23 @@ class CommitServiceImplTest {
 
     @Test
     void whenGetCommitsByRepositoryReturnCommits() {
-        when(commitStore.findByRepositoryFullName("katya/analysis"))
+        when(commitStore.findByGitHubRepositoryFullName("katya/analysis"))
                 .thenReturn(List.of(commit1, commit2));
 
         List<Commit> result = commitService.getCommitsByRepository("katya/analysis");
 
         assertThat(result).containsExactly(commit1, commit2);
-        verify(commitStore).findByRepositoryFullName("katya/analysis");
+        verify(commitStore).findByGitHubRepositoryFullName("katya/analysis");
     }
 
     @Test
     void findLatestCommitShouldReturnNewestCommit() {
-        when(commitStore.findByRepositoryFullName("katya/analysis"))
+        when(commitStore.findByGitHubRepositoryFullName("katya/analysis"))
                 .thenReturn(List.of(commit1, commit2));
 
         Optional<Commit> result = commitService.findLatestCommit(testRepo);
 
-        verify(commitStore).findByRepositoryFullName("katya/analysis");
+        verify(commitStore).findByGitHubRepositoryFullName("katya/analysis");
         assertThat(result).isPresent();
         assertThat(result.get().getSha()).isEqualTo("sha2");
 
@@ -110,7 +110,7 @@ class CommitServiceImplTest {
 
     @Test
     void findLatestCommitWhenNoCommitsThenEmpty() {
-        when(commitStore.findByRepositoryFullName("katya/analysis"))
+        when(commitStore.findByGitHubRepositoryFullName("katya/analysis"))
                 .thenReturn(List.of());
 
         Optional<Commit> result = commitService.findLatestCommit(testRepo);

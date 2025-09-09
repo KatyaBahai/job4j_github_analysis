@@ -2,26 +2,30 @@ package ru.job4j.github.analysis.service;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 import ru.job4j.github.analysis.dto.CommitDto;
 import ru.job4j.github.analysis.model.Commit;
-import ru.job4j.github.analysis.model.Repository;
+import ru.job4j.github.analysis.model.GitHubRepository;
 import ru.job4j.github.analysis.service.commit.CommitService;
 import ru.job4j.github.analysis.service.repository.RepositoryService;
 
 import java.util.List;
 import java.util.Optional;
 
-@AllArgsConstructor
-@NoArgsConstructor
-public class TaskScheduler {
+@Service
+public class CustomTaskScheduler {
+    @Autowired
     private RepositoryService repositoryService;
+    @Autowired
     private CommitService commitService;
+    @Autowired
     private GitHubRemote gitHubRemote;
 
     @Scheduled(fixedRateString = "${scheduler.fixedRate}")
     public void fetchCommits() {
-        List<Repository> repositories = repositoryService.getAll();
+        List<GitHubRepository> repositories = repositoryService.getAll();
 
         repositories.forEach(repo -> {
             Optional<Commit> latestCommit = commitService.findLatestCommit(repo);

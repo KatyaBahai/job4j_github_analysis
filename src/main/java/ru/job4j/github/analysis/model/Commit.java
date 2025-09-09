@@ -1,17 +1,23 @@
 package ru.job4j.github.analysis.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.Instant;
 
+@Schema(description = "Commit Model Information")
 @Builder
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "commits")
 public class Commit {
     @Id
+    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String message;
@@ -21,5 +27,5 @@ public class Commit {
     private String sha;
     @ManyToOne
     @JoinColumn(name = "repository_id")
-    private Repository repository;
+    private GitHubRepository gitHubRepository;
 }

@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface CommitStore extends JpaRepository<Commit, Long> {
 
-    List<Commit> findByRepositoryFullName(String fullName);
+    List<Commit> findByGitHubRepositoryFullName(String fullName);
 
     boolean existsBySha(String sha);
 

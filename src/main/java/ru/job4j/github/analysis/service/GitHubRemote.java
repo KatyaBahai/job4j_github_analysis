@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.job4j.github.analysis.dto.CommitDto;
-import ru.job4j.github.analysis.model.Commit;
-import ru.job4j.github.analysis.model.Repository;
+import ru.job4j.github.analysis.model.GitHubRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,11 +22,11 @@ public class GitHubRemote {
     @Autowired
     private RestTemplate restTemplate;
 
-    public List<Repository> fetchRepositories(String username) {
+    public List<GitHubRepository> fetchRepositories(String username) {
         String url = "https://api.github.com/users/" + username + "/repos";
-        ResponseEntity<List<Repository>> response = restTemplate.exchange(
+        ResponseEntity<List<GitHubRepository>> response = restTemplate.exchange(
                 url, HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<Repository>>() { });
+                new ParameterizedTypeReference<List<GitHubRepository>>() { });
         return response.getBody();
     }
 

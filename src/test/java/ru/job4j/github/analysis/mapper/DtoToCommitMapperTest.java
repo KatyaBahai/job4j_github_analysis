@@ -1,15 +1,11 @@
 package ru.job4j.github.analysis.mapper;
 
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import ru.job4j.github.analysis.dto.CommitDto;
 import ru.job4j.github.analysis.model.Commit;
-import ru.job4j.github.analysis.model.Repository;
+import ru.job4j.github.analysis.model.GitHubRepository;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -24,7 +20,7 @@ class DtoToCommitMapperTest {
     @Test
     void whenToCommitAllFieldsMappedCorrectly() {
         Instant date = Instant.now();
-        Repository testRepo = Repository.builder()
+        GitHubRepository testRepo = GitHubRepository.builder()
                 .id(1L)
                 .fullName("katya/analysis")
                 .createdAt(date.minus(Duration.ofDays(1)))
@@ -32,7 +28,7 @@ class DtoToCommitMapperTest {
                 .updatedAt(date)
                 .language("java")
                 .build();
-        CommitDto commitDto = new CommitDto("sha123", "Initial commit", "Artem", date);
+        CommitDto commitDto = new CommitDto("sha123", "Artem", "Initial commit", date);
 
         Commit commit = mapper.toCommit(commitDto, testRepo);
 
@@ -40,13 +36,13 @@ class DtoToCommitMapperTest {
         assertThat(commit.getSha()).isEqualTo("sha123");
         assertThat(commit.getMessage()).isEqualTo("Initial commit");
         assertThat(commit.getDate()).isEqualTo(date);
-        assertThat(commit.getRepository()).isEqualTo(testRepo);
+        assertThat(commit.getGitHubRepository()).isEqualTo(testRepo);
     }
 
     @Test
     void whenToCommitsAllFieldsMappedCorrectly() {
         Instant date = Instant.now();
-        Repository testRepo = Repository.builder()
+        GitHubRepository testRepo = GitHubRepository.builder()
                 .id(1L)
                 .fullName("katya/analysis")
                 .createdAt(Instant.now().minus(Duration.ofDays(1)))
@@ -54,8 +50,8 @@ class DtoToCommitMapperTest {
                 .updatedAt(Instant.now())
                 .language("java")
                 .build();
-        CommitDto commitDto = new CommitDto("sha123", "Initial commit", "Artem", date);
-        CommitDto commitDto2 = new CommitDto("sha2", "Second commit", "Boris", date);
+        CommitDto commitDto = new CommitDto("sha123", "Artem", "Initial commit", date);
+        CommitDto commitDto2 = new CommitDto("sha2", "Boris", "Second commit", date);
         List<CommitDto> dtos = List.of(commitDto, commitDto2);
 
         List<Commit> commits = mapper.toCommits(dtos, testRepo);
@@ -66,7 +62,7 @@ class DtoToCommitMapperTest {
                 .containsExactly("sha123", "sha2");
 
         assertThat(commits)
-                .extracting(Commit::getRepository)
+                .extracting(Commit::getGitHubRepository)
                 .containsOnly(testRepo);
     }
 }

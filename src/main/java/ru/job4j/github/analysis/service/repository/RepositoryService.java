@@ -1,11 +1,11 @@
 package ru.job4j.github.analysis.service.repository;
 
-import ru.job4j.github.analysis.model.Repository;
+import ru.job4j.github.analysis.model.GitHubRepository;
 
 import java.util.List;
 
 public interface RepositoryService {
-    void create(Repository repository);
+    void create(String userName);
 
-    List<Repository> getAll();
+    List<GitHubRepository> getAll();
 }
